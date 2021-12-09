@@ -1,0 +1,57 @@
+def isBorder(x, y, matrix):
+    if x == 0 or x == len(matrix) - 1 or y == 0 or y == len(matrix[0]) - 1:
+        return True
+    return False
+
+def isOutsideMatrix(x, y, matrix):
+    if x < 0 or y < 0 or x > len(matrix) - 1 or y > len(matrix[0]) - 1:
+        return True
+    return False
+  
+def getBorderIslandKey(x, y):
+    return '{}{}'.format(x, y)
+
+def verifyIsland(x, y, matrix, borderIslands):
+    steps = [
+        (0, 1),
+        (1, 0),
+        (0, -1),
+        (-1, 0)
+    ]
+    for (i, j) in steps:
+        newX = x + i
+        newY = y + j
+        if isOutsideMatrix(newX, newY, matrix):
+            continue
+        neighbor = matrix[newX][newY]
+        key = getBorderIslandKey(newX, newY)
+        if neighbor == 1 and not (key in borderIslands):
+            borderIslands[key] = True
+            verifyIsland(newX, newY, matrix, borderIslands)
+
+def removeIslands(matrix):
+    borderIslands = {}
+    for x, row in enumerate(matrix):
+        for y, value in enumerate(row):
+            if value == 1 and isBorder(x, y, matrix):
+                if getBorderIslandKey(x, y) in borderIslands:
+                    continue
+                borderIslands[getBorderIslandKey(x, y)] = True
+                verifyIsland(x, y, matrix, borderIslands)    
+    for x, row in enumerate(matrix):
+        for y, value in enumerate(row):
+            if value == 1 and not (getBorderIslandKey(x, y) in borderIslands):    
+                matrix[x][y] = 0
+    return matrix
+
+"""
+matrix = [[1, 0, 0, 0, 0, 0],
+          [0, 0, 1, 1, 1, 1],
+          [0, 1, 0, 1, 0, 0],
+          [0, 1, 0, 1, 0, 0],
+          [0, 0, 0, 0, 0, 0],
+          [1, 0, 1, 0, 1, 0],
+          [0, 0, 0, 1, 0, 0]]
+          
+print(removeIslands(matrix))
+"""
